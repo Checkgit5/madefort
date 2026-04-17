@@ -86,11 +86,98 @@ function GiftIntro({ accent, onReveal }) {
   )
 }
 
+function MemoryScene({ theme }) {
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 })
+
+  const handleMove = (event) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const x = (event.clientX - bounds.left) / bounds.width
+    const y = (event.clientY - bounds.top) / bounds.height
+
+    setTilt({
+      rotateX: (0.5 - y) * 12,
+      rotateY: (x - 0.5) * 14,
+    })
+  }
+
+  const resetTilt = () => setTilt({ rotateX: 0, rotateY: 0 })
+
+  return (
+    <div className="relative mx-auto w-full max-w-[22rem] md:max-w-[26rem]" style={{ perspective: '1600px' }}>
+      <motion.div
+        className="relative"
+        onMouseMove={handleMove}
+        onMouseLeave={resetTilt}
+        animate={{
+          rotateX: tilt.rotateX,
+          rotateY: tilt.rotateY,
+          y: [0, -6, 0],
+        }}
+        transition={{
+          rotateX: { type: 'spring', stiffness: 120, damping: 18 },
+          rotateY: { type: 'spring', stiffness: 120, damping: 18 },
+          y: { duration: 4.6, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' },
+        }}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <div
+          className="absolute inset-10 rounded-[2.5rem] blur-3xl"
+          style={{ background: `radial-gradient(circle, ${theme.accentSoft} 0%, transparent 72%)` }}
+        />
+        <div
+          className="absolute -left-4 top-10 h-32 w-32 rounded-[2rem] border border-white/30 bg-white/20 backdrop-blur-xl md:-left-10"
+          style={{ transform: 'translateZ(-80px) rotate(-12deg)' }}
+        />
+        <div
+          className="absolute -right-3 bottom-12 h-28 w-28 rounded-full border border-white/35 bg-white/15 backdrop-blur-xl md:-right-8"
+          style={{ transform: 'translateZ(-120px)' }}
+        />
+        <div
+          className="absolute -right-2 top-0 h-full w-full rounded-[2.8rem] border border-white/20 bg-white/12 shadow-2xl backdrop-blur-md"
+          style={{ transform: 'translateZ(-60px) rotate(6deg)' }}
+        />
+        <div
+          className="relative overflow-hidden rounded-[2.8rem] border border-white/45 bg-white/30 p-3 shadow-[0_35px_90px_rgba(0,0,0,0.18)] backdrop-blur-2xl"
+          style={{ transform: 'translateZ(40px)' }}
+        >
+          <div className="overflow-hidden rounded-[2.1rem]">
+            <img
+              src={siteContent.heroImage}
+              alt={siteContent.imageAlt}
+              className="h-[22rem] w-full object-cover md:h-[29rem]"
+            />
+          </div>
+          <div className="flex items-center justify-between gap-4 px-3 pb-2 pt-4">
+            <div>
+              <p className="font-body text-[11px] uppercase tracking-[0.32em] text-black/45">
+                {siteContent.recipient}
+              </p>
+              <p className="font-display text-2xl leading-none text-black/70 md:text-[2.1rem]">
+                {siteContent.imageCaption}
+              </p>
+            </div>
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-white/40"
+              style={{ color: theme.accentStrong }}
+            >
+              <Heart fill="currentColor" size={18} />
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 function StoryCard({ accent, accentSoft, theme, currentIndex, onNext }) {
   const currentEntry = siteContent.story[currentIndex]
 
   return (
-    <div className="relative w-full max-w-3xl">
+    <div className="relative w-full max-w-2xl">
       <div
         className="absolute inset-0 rounded-[2.5rem] blur-3xl"
         style={{ background: `radial-gradient(circle, ${accentSoft} 0%, transparent 72%)` }}
@@ -116,7 +203,7 @@ function StoryCard({ accent, accentSoft, theme, currentIndex, onNext }) {
             <p className="font-body text-xs uppercase tracking-[0.35em] text-black/45">
               {siteContent.eyebrow}
             </p>
-            <h1 className="font-display text-4xl leading-none md:text-6xl" style={{ color: theme.text }}>
+            <h1 className="font-display text-4xl leading-none md:text-5xl" style={{ color: theme.text }}>
               {siteContent.title}
             </h1>
           </div>
@@ -136,7 +223,7 @@ function StoryCard({ accent, accentSoft, theme, currentIndex, onNext }) {
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="font-display text-3xl leading-tight md:text-[2.95rem]"
+              className="font-display text-[2rem] leading-tight md:text-[2.75rem]"
               style={{ color: theme.text }}
             >
               {currentEntry.text}
@@ -144,8 +231,8 @@ function StoryCard({ accent, accentSoft, theme, currentIndex, onNext }) {
           </AnimatePresence>
         </div>
 
-        <div className="mt-10 flex items-center justify-between gap-4 border-t border-black/10 pt-6">
-          <div className="flex items-center gap-4">
+        <div className="mt-10 flex flex-col gap-5 border-t border-black/10 pt-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-wrap items-center gap-4">
             <span className="font-body text-xs uppercase tracking-[0.35em] text-black/45">
               To {siteContent.recipient}
             </span>
@@ -340,8 +427,9 @@ export default function App() {
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1.1, ease: 'easeOut' }}
-              className="flex w-full max-w-5xl flex-col items-center gap-8"
+              className="flex w-full max-w-6xl flex-col items-center gap-8 md:grid md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:items-center"
             >
+              <MemoryScene theme={activeTheme} />
               <StoryCard
                 accent={activeTheme.accent}
                 accentSoft={activeTheme.accentSoft}

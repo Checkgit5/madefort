@@ -40,6 +40,10 @@ export const siteContent = {
   theme: 'rose',
   effect: 'hearts',
   musicEnabled: true,
+  heroImage:
+    'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=900&q=80',
+  imageAlt: 'A romantic portrait bathed in soft warm light.',
+  imageCaption: 'Some memories deserve their own light.',
   story: [
     {
       label: '01',
