@@ -33,7 +33,8 @@ export const THEMES = {
 
 export const siteContent = {
   recipient: 'Anita',
-  introLabel: 'Open when the room feels quiet enough for wonder.',
+  introLabel: 'press start and step inside',
+  openingMessage: 'Happy 1st Anniversary Anita my love',
   eyebrow: 'a little room i made for you',
   title: 'Still with you.',
   closingLine: 'hold and drag the room with your eyes.',
