@@ -1,47 +1,77 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
-import { Gift, Heart, Volume2, VolumeX } from 'lucide-react'
+import { Gift, Volume2, VolumeX } from 'lucide-react'
 import { siteContent, THEMES } from './siteContent'
 
 const AUDIO_LOOP =
   'data:audio/mp3;base64,SUQzAwAAAAAAFlRFTkMAAAAPAAADTGF2ZjU4LjMyLjEwNAAAAAAAAAAAAAAA//uQxAADBzQAKQAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//uQxAADhAAAQgAAABhAAAACAAADSAAAAAEAAACkgICAQFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB//uQxAADhAAAQgAAABhAAAACAAADSAAAAAEAAACkgICAQFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB'
 
-const MEMORY_LAYOUT = [
-  { type: 'photo', x: '14%', y: '18%', z: -90, rotate: -9, size: 120 },
-  { type: 'note', x: '34%', y: '12%', z: -130, rotate: -7, width: 360 },
-  { type: 'note', x: '65%', y: '18%', z: -160, rotate: 8, width: 310 },
-  { type: 'note', x: '19%', y: '42%', z: -100, rotate: 4, width: 300 },
-  { type: 'photo', x: '77%', y: '30%', z: -140, rotate: 6, size: 96 },
-  { type: 'note', x: '52%', y: '40%', z: -40, rotate: -3, width: 390 },
-  { type: 'note', x: '70%', y: '67%', z: -80, rotate: 2, width: 340 },
-  { type: 'photo', x: '20%', y: '72%', z: 40, rotate: 7, size: 140 },
-  { type: 'note', x: '41%', y: '78%', z: 30, rotate: -1, width: 250 },
-  { type: 'note', x: '87%', y: '81%', z: 15, rotate: -4, width: 270 },
-]
-
 function GlowDust({ accent }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {Array.from({ length: 24 }, (_, index) => (
+      {Array.from({ length: 26 }, (_, index) => (
         <motion.div
           key={index}
           className="absolute h-1 w-1 rounded-full"
-          initial={{ opacity: 0.15, scale: 0.6 }}
-          animate={{ opacity: [0.08, 0.45, 0.12], scale: [0.6, 1.15, 0.8] }}
+          initial={{ opacity: 0.12, scale: 0.6 }}
+          animate={{ opacity: [0.06, 0.4, 0.12], scale: [0.6, 1.2, 0.8] }}
           transition={{
-            duration: 2.8 + (index % 5),
+            duration: 2.4 + (index % 5),
             repeat: Number.POSITIVE_INFINITY,
             ease: 'easeInOut',
-            delay: index * 0.18,
+            delay: index * 0.14,
           }}
           style={{
-            left: `${(index * 13 + 11) % 100}%`,
-            top: `${(index * 17 + 7) % 100}%`,
+            left: `${(index * 11 + 7) % 100}%`,
+            top: `${(index * 17 + 13) % 100}%`,
             background: accent,
-            boxShadow: `0 0 12px ${accent}`,
+            boxShadow: `0 0 10px ${accent}`,
           }}
         />
+      ))}
+    </div>
+  )
+}
+
+function FireworkBloom({ accent }) {
+  const bursts = [
+    { left: '12%', top: '22%', delay: 0.2, color: '#ffd34f' },
+    { left: '78%', top: '26%', delay: 1.1, color: '#6ef0ff' },
+    { left: '67%', top: '58%', delay: 2.1, color: '#65ff9a' },
+  ]
+
+  return (
+    <div className="pointer-events-none absolute inset-0 hidden md:block">
+      {bursts.map((burst) => (
+        <motion.div
+          key={`${burst.left}-${burst.top}`}
+          className="absolute"
+          initial={{ opacity: 0, scale: 0.35 }}
+          animate={{ opacity: [0, 0.95, 0], scale: [0.35, 1, 1.18] }}
+          transition={{
+            duration: 1.8,
+            repeat: Number.POSITIVE_INFINITY,
+            repeatDelay: 4,
+            ease: 'easeOut',
+            delay: burst.delay,
+          }}
+          style={{ left: burst.left, top: burst.top }}
+        >
+          <div className="relative h-28 w-28">
+            {Array.from({ length: 10 }, (_, index) => (
+              <span
+                key={index}
+                className="absolute left-1/2 top-1/2 block h-10 w-[2px] origin-bottom rounded-full"
+                style={{
+                  transform: `translate(-50%, -100%) rotate(${index * 36}deg)`,
+                  background: `linear-gradient(180deg, ${burst.color}, transparent)`,
+                  boxShadow: `0 0 12px ${burst.color}, 0 0 26px ${accent}`,
+                }}
+              />
+            ))}
+          </div>
+        </motion.div>
       ))}
     </div>
   )
@@ -109,9 +139,6 @@ function OpeningSequence({ accent, phaseValue }) {
             >
               {siteContent.openingMessage}
             </p>
-            <div className="mt-6 text-[#ff8fbe]" style={{ filter: `drop-shadow(0 0 16px ${accent})` }}>
-              <Heart fill="currentColor" size={34} className="mx-auto" />
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -119,189 +146,6 @@ function OpeningSequence({ accent, phaseValue }) {
   )
 }
 
-function FireworkBloom({ accent }) {
-  const bursts = [
-    { left: '16%', top: '24%', delay: 0.2, color: '#ffd34f' },
-    { left: '76%', top: '28%', delay: 0.8, color: '#6ef0ff' },
-    { left: '62%', top: '56%', delay: 1.2, color: '#65ff9a' },
-  ]
-
-  return (
-    <div className="pointer-events-none absolute inset-0 hidden md:block">
-      {bursts.map((burst) => (
-        <motion.div
-          key={`${burst.left}-${burst.top}`}
-          className="absolute"
-          initial={{ opacity: 0, scale: 0.3 }}
-          animate={{ opacity: [0, 0.95, 0], scale: [0.3, 1, 1.15] }}
-          transition={{
-            duration: 1.8,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: 'easeOut',
-            delay: burst.delay,
-            repeatDelay: 3.8,
-          }}
-          style={{ left: burst.left, top: burst.top }}
-        >
-          <div className="relative h-28 w-28">
-            {Array.from({ length: 10 }, (_, index) => (
-              <span
-                key={index}
-                className="absolute left-1/2 top-1/2 block h-10 w-[2px] origin-bottom rounded-full"
-                style={{
-                  transform: `translate(-50%, -100%) rotate(${index * 36}deg)`,
-                  background: `linear-gradient(180deg, ${burst.color}, transparent)`,
-                  boxShadow: `0 0 12px ${burst.color}, 0 0 26px ${accent}`,
-                }}
-              />
-            ))}
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  )
-}
-
-function FloatingMemoryRoom({ accent, activeStory, messageIndex, onNext }) {
-  const [tilt, setTilt] = useState({ rotateX: -6, rotateY: -16, x: 0, y: 0 })
-
-  const handleMove = (event) => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      return
-    }
-
-    const bounds = event.currentTarget.getBoundingClientRect()
-    const px = (event.clientX - bounds.left) / bounds.width - 0.5
-    const py = (event.clientY - bounds.top) / bounds.height - 0.5
-
-    setTilt({
-      rotateX: -6 - py * 12,
-      rotateY: -16 + px * 18,
-      x: px * 14,
-      y: py * 10,
-    })
-  }
-
-  const resetTilt = () => setTilt({ rotateX: -6, rotateY: -16, x: 0, y: 0 })
-
-  return (
-    <section className="relative min-h-screen overflow-hidden pt-16 md:pt-20">
-      <div className="pointer-events-none absolute left-1/2 top-[18%] h-52 w-[45rem] -translate-x-1/2 rounded-full bg-[#ff4f92]/10 blur-3xl" />
-      <div
-        className="absolute inset-0"
-        onMouseMove={handleMove}
-        onMouseLeave={resetTilt}
-      >
-        <GlowDust accent={accent} />
-        <FireworkBloom accent={accent} />
-        <motion.div
-          className="absolute inset-0"
-          animate={{
-            rotateX: tilt.rotateX,
-            rotateY: tilt.rotateY,
-            x: tilt.x,
-            y: tilt.y,
-          }}
-            transition={{ type: 'spring', stiffness: 90, damping: 18 }}
-            style={{ transformStyle: 'preserve-3d', perspective: '1400px' }}
-          >
-            <motion.div
-              className="absolute left-1/2 top-[72%] z-20 w-[min(88vw,34rem)] -translate-x-1/2 md:top-[78%] md:w-[32rem]"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4.8, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-              style={{ transform: 'translateZ(90px)' }}
-            >
-              <button
-                type="button"
-                onClick={onNext}
-                className="w-full rounded-full border border-[#ff8bb9]/45 bg-black/78 px-6 py-4 shadow-[0_0_22px_rgba(255,92,143,0.55),0_0_52px_rgba(255,92,143,0.22)] backdrop-blur-xl"
-              >
-                <p className="truncate font-display text-lg text-[#f4a6c3]/90 md:text-[1.45rem]">
-                  <span className="mr-2 text-[#ff70ac]">{'\u2665'}</span>
-                  {activeStory.text}
-                </p>
-              </button>
-            </motion.div>
-
-            {MEMORY_LAYOUT.map((item, index) => {
-              const note = siteContent.floatingNotes[index % siteContent.floatingNotes.length]
-              const photo = siteContent.memoryPhotos[index % siteContent.memoryPhotos.length]
-
-            if (item.type === 'photo') {
-              return (
-                <motion.div
-                  key={`photo-${index}`}
-                  className="absolute"
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{
-                    duration: 4 + (index % 3),
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: 'easeInOut',
-                    delay: index * 0.25,
-                  }}
-                  style={{
-                    left: item.x,
-                    top: item.y,
-                    width: item.size,
-                    height: item.size * 1.12,
-                    transform: `translateZ(${item.z}px) rotate(${item.rotate}deg)`,
-                  }}
-                >
-                  <div className="h-full w-full overflow-hidden rounded-[1.2rem] border border-white/35 bg-black/50 p-1 shadow-[0_0_28px_rgba(255,92,143,0.65)]">
-                    <img src={photo} alt="" className="h-full w-full rounded-[1rem] object-cover" />
-                  </div>
-                </motion.div>
-              )
-            }
-
-            return (
-              <motion.div
-                key={`note-${index}`}
-                className="absolute"
-                animate={{ y: [0, -8, 0] }}
-                transition={{
-                  duration: 5 + (index % 4),
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: 'easeInOut',
-                  delay: index * 0.18,
-                }}
-                style={{
-                  left: item.x,
-                  top: item.y,
-                  width: item.width,
-                  maxWidth: '78vw',
-                  transform: `translateZ(${item.z}px) rotate(${item.rotate}deg)`,
-                }}
-              >
-                <div className="rounded-full border border-[#ff8bb9]/45 bg-black/76 px-5 py-3 shadow-[0_0_18px_rgba(255,92,143,0.55),0_0_42px_rgba(255,92,143,0.22)] backdrop-blur-xl">
-                  <p className="truncate font-display text-lg text-[#f4a6c3]/90 md:text-xl">
-                    <span className="mr-2 text-[#ff70ac]">{'\u2665'}</span>
-                    {note}
-                  </p>
-                </div>
-              </motion.div>
-            )
-          })}
-        </motion.div>
-      </div>
-
-      <div className="pointer-events-none absolute left-5 top-6 md:left-8 md:top-8">
-        <p className="font-body text-[10px] uppercase tracking-[0.45em] text-white/26">{siteContent.eyebrow}</p>
-        <h1 className="mt-3 font-display text-3xl text-white/90 md:text-5xl">{siteContent.title}</h1>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 z-30 -translate-x-1/2">
-        <button
-          type="button"
-          onClick={onNext}
-          className="rounded-full border border-white/15 bg-black/58 px-7 py-3 font-body text-sm font-semibold uppercase tracking-[0.28em] text-[#f3b3cb] shadow-[0_0_16px_rgba(255,92,143,0.24)] backdrop-blur-xl"
-        >
-          Close
-        </button>
-      </div>
-    </section>
-  )
-}
 function AudioToggle({ isReady, muted, onToggle }) {
   const Icon = muted ? VolumeX : Volume2
 
@@ -315,6 +159,224 @@ function AudioToggle({ isReady, muted, onToggle }) {
       <Icon size={16} />
       {muted ? 'Play' : 'Mute'}
     </button>
+  )
+}
+
+function createFloatingItem(index) {
+  const isPhoto = index % 4 === 0
+  const note = siteContent.floatingNotes[index % siteContent.floatingNotes.length]
+  const photo = siteContent.memoryPhotos[index % siteContent.memoryPhotos.length]
+  const mobile = typeof window !== 'undefined' && window.innerWidth < 768
+
+  return {
+    id: `${Date.now()}-${index}`,
+    type: isPhoto ? 'photo' : 'note',
+    content: isPhoto ? photo : note,
+    left: `${10 + ((index * 13 + Math.random() * 22) % 80)}%`,
+    width: isPhoto ? (mobile ? 68 : 110) : mobile ? 220 + (index % 3) * 18 : 250 + (index % 4) * 36,
+    rotate: (Math.random() - 0.5) * (mobile ? 10 : 16),
+    duration: mobile ? 9 + (index % 3) : 8 + (index % 4),
+    driftX: (Math.random() - 0.5) * (mobile ? 45 : 90),
+    driftRotate: (Math.random() - 0.5) * 10,
+    z: mobile ? -20 + (index % 4) * 15 : -90 + (index % 7) * 24,
+    size: mobile ? 72 : 116,
+    delay: 0,
+  }
+}
+
+function FloatingMemoryRoom({ accent, activeStory, onNext }) {
+  const [items, setItems] = useState([])
+  const [closed, setClosed] = useState(false)
+  const [tilt, setTilt] = useState({ rotateX: -6, rotateY: -16, x: 0, y: 0 })
+  const [dragging, setDragging] = useState(false)
+  const dragStartRef = useRef({ x: 0, y: 0, rotateX: -6, rotateY: -16 })
+
+  useEffect(() => {
+    if (closed) {
+      return undefined
+    }
+
+    let index = 0
+    setItems(Array.from({ length: 8 }, () => createFloatingItem(index++)))
+
+    const interval = window.setInterval(() => {
+      setItems((current) => {
+        const next = [...current, createFloatingItem(index++)]
+        return next.slice(-20)
+      })
+    }, 850)
+
+    return () => window.clearInterval(interval)
+  }, [closed])
+
+  const handlePointerDown = (event) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return
+    }
+
+    setDragging(true)
+    dragStartRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+      rotateX: tilt.rotateX,
+      rotateY: tilt.rotateY,
+    }
+  }
+
+  const handlePointerMove = (event) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return
+    }
+
+    if (!dragging) {
+      const bounds = event.currentTarget.getBoundingClientRect()
+      const px = (event.clientX - bounds.left) / bounds.width - 0.5
+      const py = (event.clientY - bounds.top) / bounds.height - 0.5
+
+      setTilt({
+        rotateX: -6 - py * 12,
+        rotateY: -16 + px * 18,
+        x: px * 14,
+        y: py * 10,
+      })
+      return
+    }
+
+    const dx = event.clientX - dragStartRef.current.x
+    const dy = event.clientY - dragStartRef.current.y
+
+    setTilt({
+      rotateX: dragStartRef.current.rotateX - dy * 0.05,
+      rotateY: dragStartRef.current.rotateY + dx * 0.06,
+      x: 0,
+      y: 0,
+    })
+  }
+
+  const handlePointerUp = () => {
+    setDragging(false)
+  }
+
+  return (
+    <section className="relative min-h-screen overflow-hidden pt-16 md:pt-20">
+      <div className="pointer-events-none absolute left-1/2 top-[18%] h-52 w-[45rem] -translate-x-1/2 rounded-full bg-[#ff4f92]/10 blur-3xl" />
+      <div
+        className="absolute inset-0"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+      >
+        <GlowDust accent={accent} />
+        <FireworkBloom accent={accent} />
+        <motion.div
+          className={`absolute inset-0 ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+          animate={{
+            rotateX: tilt.rotateX,
+            rotateY: tilt.rotateY,
+            x: tilt.x,
+            y: tilt.y,
+          }}
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          style={{ transformStyle: 'preserve-3d', perspective: '1400px' }}
+        >
+          <AnimatePresence>
+            {!closed ? (
+              <motion.button
+                key="featured"
+                type="button"
+                onClick={onNext}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -18 }}
+                className="absolute left-1/2 top-[72%] z-20 w-[min(88vw,34rem)] -translate-x-1/2 rounded-full border border-[#ff8bb9]/45 bg-black/78 px-6 py-4 text-left shadow-[0_0_22px_rgba(255,92,143,0.55),0_0_52px_rgba(255,92,143,0.22)] backdrop-blur-xl md:top-[78%] md:w-[32rem]"
+                style={{ transform: 'translateZ(90px)' }}
+              >
+                <p className="truncate font-display text-lg text-[#f4a6c3]/90 md:text-[1.45rem]">
+                  <span className="mr-2 text-[#ff70ac]">{'\u2665'}</span>
+                  {activeStory.text}
+                </p>
+              </motion.button>
+            ) : null}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {!closed
+              ? items.map((item) =>
+                  item.type === 'photo' ? (
+                    <motion.div
+                      key={item.id}
+                      className="absolute"
+                      initial={{ opacity: 0, y: '14vh', x: 0, rotate: item.rotate, scale: 0.85 }}
+                      animate={{
+                        opacity: [0, 1, 1, 0],
+                        y: ['14vh', '-118vh'],
+                        x: [0, item.driftX],
+                        rotate: [item.rotate, item.rotate + item.driftRotate],
+                        scale: [0.85, 1, 1, 0.96],
+                      }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: item.duration, ease: 'linear' }}
+                      style={{
+                        left: item.left,
+                        width: item.size,
+                        height: item.size * 1.14,
+                        transform: `translateZ(${item.z}px)`,
+                      }}
+                    >
+                      <div className="h-full w-full overflow-hidden rounded-[1.1rem] border border-white/35 bg-black/50 p-1 shadow-[0_0_28px_rgba(255,92,143,0.65)]">
+                        <img src={item.content} alt="" className="h-full w-full rounded-[0.95rem] object-cover" />
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key={item.id}
+                      className="absolute"
+                      initial={{ opacity: 0, y: '14vh', x: 0, rotate: item.rotate }}
+                      animate={{
+                        opacity: [0, 1, 1, 0],
+                        y: ['14vh', '-118vh'],
+                        x: [0, item.driftX],
+                        rotate: [item.rotate, item.rotate + item.driftRotate],
+                      }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: item.duration, ease: 'linear' }}
+                      style={{
+                        left: item.left,
+                        width: item.width,
+                        maxWidth: '86vw',
+                        transform: `translateZ(${item.z}px)`,
+                      }}
+                    >
+                      <div className="rounded-full border border-[#ff8bb9]/45 bg-black/76 px-5 py-3 shadow-[0_0_18px_rgba(255,92,143,0.55),0_0_42px_rgba(255,92,143,0.22)] backdrop-blur-xl">
+                        <p className="font-display text-base text-[#f4a6c3]/90 md:text-xl">
+                          <span className="mr-2 text-[#ff70ac]">{'\u2665'}</span>
+                          {item.content}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ),
+                )
+              : null}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
+      <div className="pointer-events-none absolute left-5 top-6 md:left-8 md:top-8">
+        <p className="font-body text-[10px] uppercase tracking-[0.45em] text-white/26">{siteContent.eyebrow}</p>
+        <h1 className="mt-3 font-display text-3xl text-white/90 md:text-5xl">{siteContent.title}</h1>
+      </div>
+
+      <div className="absolute bottom-8 left-1/2 z-30 -translate-x-1/2">
+        <button
+          type="button"
+          onClick={() => setClosed(true)}
+          className="rounded-full border border-white/15 bg-black/58 px-7 py-3 font-body text-sm font-semibold uppercase tracking-[0.28em] text-[#f3b3cb] shadow-[0_0_16px_rgba(255,92,143,0.24)] backdrop-blur-xl"
+        >
+          Close
+        </button>
+      </div>
+    </section>
   )
 }
 
@@ -526,7 +588,6 @@ export default function App() {
               <FloatingMemoryRoom
                 accent={activeTheme.accent}
                 activeStory={activeStory}
-                messageIndex={messageIndex}
                 onNext={handleNext}
               />
             </motion.div>
