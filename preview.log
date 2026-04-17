@@ -1,0 +1,17 @@
+
+> madefort-gift-site@0.0.0 preview
+> vite preview --host 127.0.0.1 --port 4173
+
+[31mfailed to load config from C:\Users\monoc\Desktop\MADEFORT\vite.config.js[39m
+[31merror when starting preview server:
+Error: spawn EPERM
+    at ChildProcess.spawn (node:internal/child_process:441:11)
+    at Object.spawn (node:child_process:796:9)
+    at ensureServiceIsRunning (C:\Users\monoc\Desktop\MADEFORT\node_modules\esbuild\lib\main.js:1978:29)
+    at build (C:\Users\monoc\Desktop\MADEFORT\node_modules\esbuild\lib\main.js:1876:26)
+    at bundleConfigFile (file:///C:/Users/monoc/Desktop/MADEFORT/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:49343:24)
+    at async bundleAndLoadConfigFile (file:///C:/Users/monoc/Desktop/MADEFORT/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:49327:19)
+    at async loadConfigFromFile (file:///C:/Users/monoc/Desktop/MADEFORT/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:49291:44)
+    at async resolveConfig (file:///C:/Users/monoc/Desktop/MADEFORT/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:48786:24)
+    at async preview (file:///C:/Users/monoc/Desktop/MADEFORT/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:48266:18)
+    at async CAC.<anonymous> (file:///C:/Users/monoc/Desktop/MADEFORT/node_modules/vite/dist/node/cli.js:914:22)[39m
