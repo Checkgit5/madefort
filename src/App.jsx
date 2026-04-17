@@ -1,61 +1,48 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
-import { Gift, Heart, Sparkles, Volume2, VolumeX } from 'lucide-react'
+import { Gift, Heart, Volume2, VolumeX } from 'lucide-react'
 import { siteContent, THEMES } from './siteContent'
-
-const FALLING_OPTIONS = [
-  { value: 'hearts', label: 'Hearts', Icon: Heart },
-  { value: 'stars', label: 'Stars', Icon: Sparkles },
-]
 
 const AUDIO_LOOP =
   'data:audio/mp3;base64,SUQzAwAAAAAAFlRFTkMAAAAPAAADTGF2ZjU4LjMyLjEwNAAAAAAAAAAAAAAA//uQxAADBzQAKQAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//uQxAADhAAAQgAAABhAAAACAAADSAAAAAEAAACkgICAQFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB//uQxAADhAAAQgAAABhAAAACAAADSAAAAAEAAACkgICAQFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB'
 
-function createParticles(effect) {
-  return Array.from({ length: 22 }, (_, index) => ({
-    id: `${effect}-${index}`,
-    left: `${(index * 17 + 7) % 100}%`,
-    size: 14 + ((index * 9) % 20),
-    duration: 7 + (index % 6),
-    delay: (index % 8) * 0.6,
-    drift: ((index % 5) - 2) * 24,
-  }))
-}
+const MEMORY_LAYOUT = [
+  { type: 'photo', x: '14%', y: '18%', z: -90, rotate: -9, size: 120 },
+  { type: 'note', x: '34%', y: '12%', z: -130, rotate: -7, width: 360 },
+  { type: 'note', x: '65%', y: '18%', z: -160, rotate: 8, width: 310 },
+  { type: 'note', x: '19%', y: '42%', z: -100, rotate: 4, width: 300 },
+  { type: 'photo', x: '77%', y: '30%', z: -140, rotate: 6, size: 96 },
+  { type: 'note', x: '52%', y: '40%', z: -40, rotate: -3, width: 390 },
+  { type: 'note', x: '70%', y: '67%', z: -80, rotate: 2, width: 340 },
+  { type: 'photo', x: '20%', y: '72%', z: 40, rotate: 7, size: 140 },
+  { type: 'note', x: '41%', y: '78%', z: 30, rotate: -1, width: 250 },
+  { type: 'note', x: '87%', y: '81%', z: 15, rotate: -4, width: 270 },
+]
 
-function FallingLayer({ accent, effect }) {
-  const { Icon } = FALLING_OPTIONS.find((item) => item.value === effect) ?? FALLING_OPTIONS[0]
-  const particles = createParticles(effect)
-
+function GlowDust({ accent }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {particles.map((particle) => (
+      {Array.from({ length: 24 }, (_, index) => (
         <motion.div
-          key={particle.id}
-          className="absolute -top-10 flex items-center justify-center"
-          initial={{ y: '-10%', x: 0, opacity: 0 }}
-          animate={{
-            y: '110vh',
-            x: [0, particle.drift, -particle.drift / 2, particle.drift / 3],
-            opacity: [0, 0.8, 0.55, 0],
-            rotate: [0, 8, -6, 10],
-          }}
+          key={index}
+          className="absolute h-1 w-1 rounded-full"
+          initial={{ opacity: 0.15, scale: 0.6 }}
+          animate={{ opacity: [0.08, 0.45, 0.12], scale: [0.6, 1.15, 0.8] }}
           transition={{
-            duration: particle.duration,
+            duration: 2.8 + (index % 5),
             repeat: Number.POSITIVE_INFINITY,
-            ease: 'linear',
-            delay: particle.delay,
+            ease: 'easeInOut',
+            delay: index * 0.18,
           }}
-          style={{ left: particle.left, color: accent }}
-        >
-          <span className="drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]">
-            <Icon size={particle.size} fill={effect === 'hearts' ? 'currentColor' : 'none'} strokeWidth={1.7} />
-          </span>
-        </motion.div>
+          style={{
+            left: `${(index * 13 + 11) % 100}%`,
+            top: `${(index * 17 + 7) % 100}%`,
+            background: accent,
+            boxShadow: `0 0 12px ${accent}`,
+          }}
+        />
       ))}
-      <div className="absolute right-10 top-10 hidden rounded-full border border-white/20 bg-white/10 p-3 text-white/65 backdrop-blur md:flex">
-        <Icon size={18} />
-      </div>
     </div>
   )
 }
@@ -65,7 +52,7 @@ function GiftIntro({ accent, onReveal }) {
     <motion.button
       type="button"
       onClick={onReveal}
-      className="group relative flex h-40 w-40 items-center justify-center rounded-[2rem] border border-white/15 bg-white/5 text-white shadow-glow backdrop-blur-xl transition-transform hover:scale-[1.03]"
+      className="group relative flex h-40 w-40 items-center justify-center rounded-[2rem] border border-white/15 bg-white/5 text-white shadow-[0_0_55px_rgba(255,92,143,0.18)] backdrop-blur-xl transition-transform hover:scale-[1.03]"
       initial={{ scale: 0.94, opacity: 0 }}
       animate={{ scale: [1, 1.04, 1], opacity: 1 }}
       transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY }}
@@ -86,183 +73,6 @@ function GiftIntro({ accent, onReveal }) {
   )
 }
 
-function MemoryScene({ theme }) {
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 })
-
-  const handleMove = (event) => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      return
-    }
-
-    const bounds = event.currentTarget.getBoundingClientRect()
-    const x = (event.clientX - bounds.left) / bounds.width
-    const y = (event.clientY - bounds.top) / bounds.height
-
-    setTilt({
-      rotateX: (0.5 - y) * 12,
-      rotateY: (x - 0.5) * 14,
-    })
-  }
-
-  const resetTilt = () => setTilt({ rotateX: 0, rotateY: 0 })
-
-  return (
-    <div className="relative mx-auto w-full max-w-[22rem] md:max-w-[26rem]" style={{ perspective: '1600px' }}>
-      <motion.div
-        className="relative"
-        onMouseMove={handleMove}
-        onMouseLeave={resetTilt}
-        animate={{
-          rotateX: tilt.rotateX,
-          rotateY: tilt.rotateY,
-          y: [0, -6, 0],
-        }}
-        transition={{
-          rotateX: { type: 'spring', stiffness: 120, damping: 18 },
-          rotateY: { type: 'spring', stiffness: 120, damping: 18 },
-          y: { duration: 4.6, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' },
-        }}
-        style={{ transformStyle: 'preserve-3d' }}
-      >
-        <div
-          className="absolute inset-10 rounded-[2.5rem] blur-3xl"
-          style={{ background: `radial-gradient(circle, ${theme.accentSoft} 0%, transparent 72%)` }}
-        />
-        <div
-          className="absolute -left-4 top-10 h-32 w-32 rounded-[2rem] border border-white/30 bg-white/20 backdrop-blur-xl md:-left-10"
-          style={{ transform: 'translateZ(-80px) rotate(-12deg)' }}
-        />
-        <div
-          className="absolute -right-3 bottom-12 h-28 w-28 rounded-full border border-white/35 bg-white/15 backdrop-blur-xl md:-right-8"
-          style={{ transform: 'translateZ(-120px)' }}
-        />
-        <div
-          className="absolute -right-2 top-0 h-full w-full rounded-[2.8rem] border border-white/20 bg-white/12 shadow-2xl backdrop-blur-md"
-          style={{ transform: 'translateZ(-60px) rotate(6deg)' }}
-        />
-        <div
-          className="relative overflow-hidden rounded-[2.8rem] border border-white/45 bg-white/30 p-3 shadow-[0_35px_90px_rgba(0,0,0,0.18)] backdrop-blur-2xl"
-          style={{ transform: 'translateZ(40px)' }}
-        >
-          <div className="overflow-hidden rounded-[2.1rem]">
-            <img
-              src={siteContent.heroImage}
-              alt={siteContent.imageAlt}
-              className="h-[22rem] w-full object-cover md:h-[29rem]"
-            />
-          </div>
-          <div className="flex items-center justify-between gap-4 px-3 pb-2 pt-4">
-            <div>
-              <p className="font-body text-[11px] uppercase tracking-[0.32em] text-black/45">
-                {siteContent.recipient}
-              </p>
-              <p className="font-display text-2xl leading-none text-black/70 md:text-[2.1rem]">
-                {siteContent.imageCaption}
-              </p>
-            </div>
-            <div
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-white/40"
-              style={{ color: theme.accentStrong }}
-            >
-              <Heart fill="currentColor" size={18} />
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  )
-}
-
-function StoryCard({ accent, accentSoft, theme, currentIndex, onNext }) {
-  const currentEntry = siteContent.story[currentIndex]
-
-  return (
-    <div className="relative w-full max-w-2xl">
-      <div
-        className="absolute inset-0 rounded-[2.5rem] blur-3xl"
-        style={{ background: `radial-gradient(circle, ${accentSoft} 0%, transparent 72%)` }}
-      />
-      <motion.div
-        layout
-        className="relative overflow-hidden rounded-[2.5rem] p-8 text-left shadow-2xl backdrop-blur-2xl md:p-12"
-        style={{
-          background: theme.panel,
-          border: `1px solid ${theme.panelBorder}`,
-          boxShadow: `0 35px 80px ${theme.accentSoft}`,
-        }}
-      >
-        <div
-          className="pointer-events-none absolute inset-0 opacity-60"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(255,255,255,0.42), rgba(255,255,255,0.08) 42%, transparent 76%)',
-          }}
-        />
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div>
-            <p className="font-body text-xs uppercase tracking-[0.35em] text-black/45">
-              {siteContent.eyebrow}
-            </p>
-            <h1 className="font-display text-4xl leading-none md:text-5xl" style={{ color: theme.text }}>
-              {siteContent.title}
-            </h1>
-          </div>
-          <div
-            className="hidden h-14 w-14 items-center justify-center rounded-full border border-white/45 bg-white/30 text-white shadow-lg md:flex"
-            style={{ color: accent }}
-          >
-            <Heart fill="currentColor" size={24} />
-          </div>
-        </div>
-
-        <div className="min-h-44">
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={currentIndex}
-              initial={{ opacity: 0, y: 24, filter: 'blur(12px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="font-display text-[2rem] leading-tight md:text-[2.75rem]"
-              style={{ color: theme.text }}
-            >
-              {currentEntry.text}
-            </motion.p>
-          </AnimatePresence>
-        </div>
-
-        <div className="mt-10 flex flex-col gap-5 border-t border-black/10 pt-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="font-body text-xs uppercase tracking-[0.35em] text-black/45">
-              To {siteContent.recipient}
-            </span>
-            <div className="flex gap-2">
-              {siteContent.story.map((entry, index) => (
-              <span
-                key={entry.label}
-                className="h-2.5 rounded-full transition-all"
-                style={{
-                  width: currentIndex === index ? '2.5rem' : '0.7rem',
-                  background: currentIndex === index ? accent : 'rgba(0, 0, 0, 0.14)',
-                }}
-              />
-              ))}
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onNext}
-            className="rounded-full px-5 py-3 font-body text-sm font-semibold uppercase tracking-[0.25em] text-white shadow-lg transition hover:-translate-y-0.5"
-            style={{ backgroundColor: theme.accentStrong }}
-          >
-            Keep Going
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  )
-}
-
 function AudioToggle({ isReady, muted, onToggle }) {
   const Icon = muted ? VolumeX : Volume2
 
@@ -271,11 +81,187 @@ function AudioToggle({ isReady, muted, onToggle }) {
       type="button"
       onClick={onToggle}
       disabled={!isReady}
-      className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-3 text-sm font-medium text-white backdrop-blur disabled:cursor-not-allowed disabled:opacity-50"
+      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-4 py-3 text-sm font-medium text-white/90 backdrop-blur-xl disabled:cursor-not-allowed disabled:opacity-50"
     >
       <Icon size={16} />
       {muted ? 'Play' : 'Mute'}
     </button>
+  )
+}
+
+function FloatingMemoryRoom({ accent, activeStory, messageIndex, onNext }) {
+  const [tilt, setTilt] = useState({ rotateX: -5, rotateY: -14, x: 0, y: 0 })
+
+  const handleMove = (event) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const px = (event.clientX - bounds.left) / bounds.width - 0.5
+    const py = (event.clientY - bounds.top) / bounds.height - 0.5
+
+    setTilt({
+      rotateX: -5 - py * 10,
+      rotateY: -14 + px * 16,
+      x: px * 10,
+      y: py * 8,
+    })
+  }
+
+  const resetTilt = () => setTilt({ rotateX: -5, rotateY: -14, x: 0, y: 0 })
+
+  return (
+    <section className="relative w-full px-4 pb-8 pt-20 md:px-8 md:pb-16 md:pt-24">
+      <div className="mx-auto max-w-[1500px]">
+        <div className="mb-7 flex items-start justify-between gap-4 md:mb-10">
+          <div>
+            <p className="font-body text-[11px] uppercase tracking-[0.42em] text-white/35">
+              {siteContent.eyebrow}
+            </p>
+            <h1 className="mt-3 font-display text-4xl text-white/92 md:text-6xl">{siteContent.title}</h1>
+          </div>
+          <div className="hidden text-right md:block">
+            <p className="font-body text-[11px] uppercase tracking-[0.35em] text-white/30">to {siteContent.recipient}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_320px] md:gap-8">
+          <div
+            className="relative min-h-[58vh] overflow-hidden rounded-[2rem] border border-white/8 bg-[radial-gradient(circle_at_top,rgba(255,94,162,0.08),transparent_28%),linear-gradient(180deg,#060307_0%,#020203_100%)] shadow-[0_40px_120px_rgba(0,0,0,0.65)] md:min-h-[76vh]"
+            onMouseMove={handleMove}
+            onMouseLeave={resetTilt}
+          >
+            <GlowDust accent={accent} />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.25)_100%)]" />
+            <motion.div
+              className="absolute inset-0"
+              animate={{
+                rotateX: tilt.rotateX,
+                rotateY: tilt.rotateY,
+                x: tilt.x,
+                y: tilt.y,
+              }}
+              transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+              style={{ transformStyle: 'preserve-3d', perspective: '1400px' }}
+            >
+              {MEMORY_LAYOUT.map((item, index) => {
+                const note = siteContent.floatingNotes[index % siteContent.floatingNotes.length]
+                const photo = siteContent.memoryPhotos[index % siteContent.memoryPhotos.length]
+
+                if (item.type === 'photo') {
+                  return (
+                    <motion.div
+                      key={`photo-${index}`}
+                      className="absolute"
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{
+                        duration: 4 + (index % 3),
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: 'easeInOut',
+                        delay: index * 0.25,
+                      }}
+                      style={{
+                        left: item.x,
+                        top: item.y,
+                        width: item.size,
+                        height: item.size * 1.12,
+                        transform: `translateZ(${item.z}px) rotate(${item.rotate}deg)`,
+                      }}
+                    >
+                      <div
+                        className="h-full w-full overflow-hidden rounded-[1.2rem] border border-white/35 bg-black/50 p-1 shadow-[0_0_28px_rgba(255,92,143,0.65)]"
+                      >
+                        <img src={photo} alt="" className="h-full w-full rounded-[1rem] object-cover" />
+                      </div>
+                    </motion.div>
+                  )
+                }
+
+                return (
+                  <motion.div
+                    key={`note-${index}`}
+                    className="absolute"
+                    animate={{ y: [0, -7, 0] }}
+                    transition={{
+                      duration: 5 + (index % 4),
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: 'easeInOut',
+                      delay: index * 0.18,
+                    }}
+                    style={{
+                      left: item.x,
+                      top: item.y,
+                      width: item.width,
+                      maxWidth: '78vw',
+                      transform: `translateZ(${item.z}px) rotate(${item.rotate}deg)`,
+                    }}
+                  >
+                    <div className="rounded-full border border-[#ff8bb9]/45 bg-black/70 px-5 py-3 shadow-[0_0_18px_rgba(255,92,143,0.55),0_0_42px_rgba(255,92,143,0.22)] backdrop-blur-xl">
+                      <p className="truncate font-display text-lg text-[#f4a6c3]/90 md:text-xl">
+                        <span className="mr-2 text-[#ff70ac]">♥</span>
+                        {note}
+                      </p>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          </div>
+
+          <div className="relative">
+            <div className="sticky top-5 rounded-[1.8rem] border border-white/10 bg-black/45 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:p-6">
+              <p className="font-body text-[11px] uppercase tracking-[0.42em] text-white/35">
+                {activeStory.label} / {siteContent.story.length.toString().padStart(2, '0')}
+              </p>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={messageIndex}
+                  initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -14, filter: 'blur(8px)' }}
+                  transition={{ duration: 0.7, ease: 'easeOut' }}
+                  className="mt-5 font-display text-[1.9rem] leading-tight text-white/92 md:text-[2.2rem]"
+                >
+                  {activeStory.text}
+                </motion.p>
+              </AnimatePresence>
+
+              <div className="mt-8 flex flex-wrap items-center gap-2">
+                {siteContent.story.map((entry, index) => (
+                  <span
+                    key={entry.label}
+                    className="h-2 rounded-full transition-all"
+                    style={{
+                      width: index === messageIndex ? '2.4rem' : '0.55rem',
+                      background: index === messageIndex ? accent : 'rgba(255,255,255,0.18)',
+                      boxShadow: index === messageIndex ? `0 0 14px ${accent}` : 'none',
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div className="mt-8 flex items-center justify-between gap-4">
+                <p className="font-body text-[11px] uppercase tracking-[0.36em] text-white/30">
+                  {siteContent.recipient}
+                </p>
+                <button
+                  type="button"
+                  onClick={onNext}
+                  className="rounded-full border border-[#ff8bb9]/45 bg-black/80 px-5 py-3 font-body text-xs font-semibold uppercase tracking-[0.28em] text-[#f7b4cb] shadow-[0_0_18px_rgba(255,92,143,0.3)] transition hover:-translate-y-0.5"
+                >
+                  Keep Going
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-6 text-center font-body text-[11px] uppercase tracking-[0.42em] text-white/24 md:mt-8">
+          {siteContent.closingLine}
+        </p>
+      </div>
+    </section>
   )
 }
 
@@ -287,6 +273,7 @@ export default function App() {
   const audioRef = useRef(null)
 
   const activeTheme = THEMES[siteContent.theme] ?? THEMES.rose
+  const activeStory = siteContent.story[messageIndex]
 
   useEffect(() => {
     if (!revealed) {
@@ -314,10 +301,10 @@ export default function App() {
     setAudioReady(true)
 
     confetti({
-      particleCount: 140,
-      spread: 100,
-      origin: { y: 0.55 },
-      colors: [activeTheme.accent, '#ffffff', '#ffd7e3'],
+      particleCount: 120,
+      spread: 82,
+      origin: { y: 0.6 },
+      colors: [activeTheme.accent, '#ffbdd7', '#ffffff'],
     })
 
     const audio = audioRef.current
@@ -365,7 +352,7 @@ export default function App() {
       className="relative isolate min-h-screen overflow-hidden"
       style={{
         background: revealed
-          ? `radial-gradient(circle at top, ${activeTheme.accentSoft} 0%, transparent 32%), linear-gradient(180deg, ${activeTheme.revealTo} 0%, #fff9fb 45%, #fff4f6 100%)`
+          ? 'radial-gradient(circle at 50% 62%, rgba(255, 79, 146, 0.1) 0%, transparent 22%), radial-gradient(circle at top, rgba(255, 82, 151, 0.08) 0%, transparent 18%), linear-gradient(180deg, #050307 0%, #000000 100%)'
           : `radial-gradient(circle at top, ${activeTheme.accentSoft} 0%, transparent 22%), linear-gradient(180deg, ${activeTheme.revealFrom} 0%, #09040d 100%)`,
       }}
     >
@@ -376,26 +363,27 @@ export default function App() {
         preload="auto"
         className="hidden"
       />
-      <FallingLayer accent={activeTheme.accent} effect={siteContent.effect} />
 
       <motion.div
         className="absolute inset-0"
         animate={{
-          backgroundColor: revealed ? 'rgba(255,255,255,0)' : 'rgba(3,2,7,0.15)',
+          backgroundColor: revealed ? 'rgba(0,0,0,0)' : 'rgba(3,2,7,0.15)',
         }}
         transition={{ duration: 1.2, ease: 'easeInOut' }}
       />
 
-      <div
-        className="pointer-events-none absolute inset-0 opacity-80"
-        style={{
-          background:
-            'radial-gradient(circle at 18% 22%, rgba(255,255,255,0.4), transparent 18%), radial-gradient(circle at 82% 14%, rgba(255,255,255,0.28), transparent 14%), radial-gradient(circle at 50% 100%, rgba(255,255,255,0.3), transparent 24%)',
-        }}
-      />
+      {revealed ? (
+        <div
+          className="pointer-events-none absolute inset-0 opacity-100"
+          style={{
+            background:
+              'radial-gradient(circle at 20% 18%, rgba(255,92,143,0.12), transparent 16%), radial-gradient(circle at 80% 72%, rgba(255,92,143,0.12), transparent 18%), linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.02) 49%, transparent 50%)',
+          }}
+        />
+      ) : null}
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-8">
-        <div className="absolute left-4 top-4 flex items-center gap-3 md:left-8 md:top-8">
+      <div className="relative z-10 min-h-screen">
+        <div className="absolute left-4 top-4 z-30 flex items-center gap-3 md:left-8 md:top-8">
           <AudioToggle isReady={audioReady} muted={muted} onToggle={handleToggleMute} />
         </div>
 
@@ -407,7 +395,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 1.08, filter: 'blur(8px)' }}
               transition={{ duration: 0.8 }}
-              className="flex max-w-2xl flex-col items-center justify-center text-center"
+              className="flex min-h-screen flex-col items-center justify-center px-4 text-center"
             >
               <GiftIntro accent={activeTheme.accent} onReveal={handleReveal} />
               <p className="mt-8 font-body text-xs uppercase tracking-[0.4em] text-white/55">
@@ -417,30 +405,24 @@ export default function App() {
                 {siteContent.introLabel}
               </p>
               <p className="mt-6 max-w-md font-body text-sm uppercase tracking-[0.38em] text-white/55">
-                tap the gift and let the room change
+                tap the gift and step inside
               </p>
             </motion.section>
           ) : (
-            <motion.section
-              key="story"
-              initial={{ opacity: 0, scale: 0.96, filter: 'blur(16px)' }}
+            <motion.div
+              key="memory-room"
+              initial={{ opacity: 0, scale: 0.98, filter: 'blur(16px)' }}
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.1, ease: 'easeOut' }}
-              className="flex w-full max-w-6xl flex-col items-center gap-8 md:grid md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:items-center"
+              transition={{ duration: 1, ease: 'easeOut' }}
             >
-              <MemoryScene theme={activeTheme} />
-              <StoryCard
+              <FloatingMemoryRoom
                 accent={activeTheme.accent}
-                accentSoft={activeTheme.accentSoft}
-                theme={activeTheme}
-                currentIndex={messageIndex}
+                activeStory={activeStory}
+                messageIndex={messageIndex}
                 onNext={handleNext}
               />
-              <p className="max-w-xl text-center font-body text-sm uppercase tracking-[0.28em] text-black/45">
-                {siteContent.closingLine}
-              </p>
-            </motion.section>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
