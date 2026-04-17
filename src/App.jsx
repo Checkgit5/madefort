@@ -163,7 +163,7 @@ function FireworkBloom({ accent }) {
 }
 
 function FloatingMemoryRoom({ accent, activeStory, messageIndex, onNext }) {
-  const [tilt, setTilt] = useState({ rotateX: -5, rotateY: -14, x: 0, y: 0 })
+  const [tilt, setTilt] = useState({ rotateX: -6, rotateY: -16, x: 0, y: 0 })
 
   const handleMove = (event) => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
@@ -175,133 +175,153 @@ function FloatingMemoryRoom({ accent, activeStory, messageIndex, onNext }) {
     const py = (event.clientY - bounds.top) / bounds.height - 0.5
 
     setTilt({
-      rotateX: -5 - py * 10,
-      rotateY: -14 + px * 16,
-      x: px * 10,
-      y: py * 8,
+      rotateX: -6 - py * 12,
+      rotateY: -16 + px * 18,
+      x: px * 14,
+      y: py * 10,
     })
   }
 
-  const resetTilt = () => setTilt({ rotateX: -5, rotateY: -14, x: 0, y: 0 })
+  const resetTilt = () => setTilt({ rotateX: -6, rotateY: -16, x: 0, y: 0 })
 
   return (
-    <section className="relative w-full px-4 pb-8 pt-20 md:px-8 md:pb-16 md:pt-24">
-      <div className="mx-auto max-w-[1500px]">
-        <div className="mb-7 flex items-start justify-between gap-4 md:mb-10">
-          <div>
-            <p className="font-body text-[11px] uppercase tracking-[0.42em] text-white/35">
-              {siteContent.eyebrow}
-            </p>
-            <h1 className="mt-3 font-display text-4xl text-white/92 md:text-6xl">{siteContent.title}</h1>
-          </div>
-          <div className="hidden text-right md:block">
-            <p className="font-body text-[11px] uppercase tracking-[0.35em] text-white/30">to {siteContent.recipient}</p>
-          </div>
-        </div>
+    <section className="relative min-h-screen overflow-hidden pt-16 md:pt-20">
+      <div className="pointer-events-none absolute left-1/2 top-[18%] h-52 w-[45rem] -translate-x-1/2 rounded-full bg-[#ff4f92]/10 blur-3xl" />
+      <div
+        className="absolute inset-0"
+        onMouseMove={handleMove}
+        onMouseLeave={resetTilt}
+      >
+        <GlowDust accent={accent} />
+        <FireworkBloom accent={accent} />
+        <motion.div
+          className="absolute inset-0"
+          animate={{
+            rotateX: tilt.rotateX,
+            rotateY: tilt.rotateY,
+            x: tilt.x,
+            y: tilt.y,
+          }}
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          style={{ transformStyle: 'preserve-3d', perspective: '1400px' }}
+        >
+          {MEMORY_LAYOUT.map((item, index) => {
+            const note = siteContent.floatingNotes[index % siteContent.floatingNotes.length]
+            const photo = siteContent.memoryPhotos[index % siteContent.memoryPhotos.length]
 
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_320px] md:gap-8">
-          <div
-            className="relative min-h-[58vh] overflow-hidden rounded-[2rem] border border-white/8 bg-[radial-gradient(circle_at_top,rgba(255,94,162,0.08),transparent_28%),linear-gradient(180deg,#060307_0%,#020203_100%)] shadow-[0_40px_120px_rgba(0,0,0,0.65)] md:min-h-[76vh]"
-            onMouseMove={handleMove}
-            onMouseLeave={resetTilt}
-          >
-            <GlowDust accent={accent} />
-            <FireworkBloom accent={accent} />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.25)_100%)]" />
-            <motion.div
-              className="absolute inset-0"
-              animate={{
-                rotateX: tilt.rotateX,
-                rotateY: tilt.rotateY,
-                x: tilt.x,
-                y: tilt.y,
-              }}
-              transition={{ type: 'spring', stiffness: 90, damping: 18 }}
-              style={{ transformStyle: 'preserve-3d', perspective: '1400px' }}
-            >
-              {MEMORY_LAYOUT.map((item, index) => {
-                const note = siteContent.floatingNotes[index % siteContent.floatingNotes.length]
-                const photo = siteContent.memoryPhotos[index % siteContent.memoryPhotos.length]
-
-                if (item.type === 'photo') {
-                  return (
-                    <motion.div
-                      key={`photo-${index}`}
-                      className="absolute"
-                      animate={{ y: [0, -8, 0] }}
-                      transition={{
-                        duration: 4 + (index % 3),
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: 'easeInOut',
-                        delay: index * 0.25,
-                      }}
-                      style={{
-                        left: item.x,
-                        top: item.y,
-                        width: item.size,
-                        height: item.size * 1.12,
-                        transform: `translateZ(${item.z}px) rotate(${item.rotate}deg)`,
-                      }}
-                    >
-                      <div
-                        className="h-full w-full overflow-hidden rounded-[1.2rem] border border-white/35 bg-black/50 p-1 shadow-[0_0_28px_rgba(255,92,143,0.65)]"
-                      >
-                        <img src={photo} alt="" className="h-full w-full rounded-[1rem] object-cover" />
-                      </div>
-                    </motion.div>
-                  )
-                }
-
-                return (
-                  <motion.div
-                    key={`note-${index}`}
-                    className="absolute"
-                    animate={{ y: [0, -7, 0] }}
-                    transition={{
-                      duration: 5 + (index % 4),
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: 'easeInOut',
-                      delay: index * 0.18,
-                    }}
-                    style={{
-                      left: item.x,
-                      top: item.y,
-                      width: item.width,
-                      maxWidth: '78vw',
-                      transform: `translateZ(${item.z}px) rotate(${item.rotate}deg)`,
-                    }}
-                  >
-                    <div className="rounded-full border border-[#ff8bb9]/45 bg-black/70 px-5 py-3 shadow-[0_0_18px_rgba(255,92,143,0.55),0_0_42px_rgba(255,92,143,0.22)] backdrop-blur-xl">
-                      <p className="truncate font-display text-lg text-[#f4a6c3]/90 md:text-xl">
-                        <span className="mr-2 text-[#ff70ac]">{'\u2665'}</span>
-                        {note}
-                      </p>
-                    </div>
-                  </motion.div>
-                )
-              })}
-            </motion.div>
-          </div>
-
-          <div className="relative">
-            <div className="sticky top-5 rounded-[1.8rem] border border-white/10 bg-black/45 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:p-6">
-              <p className="font-body text-[11px] uppercase tracking-[0.42em] text-white/35">
-                {activeStory.label} / {siteContent.story.length.toString().padStart(2, '0')}
-              </p>
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={messageIndex}
-                  initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: -14, filter: 'blur(8px)' }}
-                  transition={{ duration: 0.7, ease: 'easeOut' }}
-                  className="mt-5 font-display text-[1.9rem] leading-tight text-white/92 md:text-[2.2rem]"
+            if (item.type === 'photo') {
+              return (
+                <motion.div
+                  key={`photo-${index}`}
+                  className="absolute"
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{
+                    duration: 4 + (index % 3),
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: 'easeInOut',
+                    delay: index * 0.25,
+                  }}
+                  style={{
+                    left: item.x,
+                    top: item.y,
+                    width: item.size,
+                    height: item.size * 1.12,
+                    transform: `translateZ(${item.z}px) rotate(${item.rotate}deg)`,
+                  }}
                 >
-                  {activeStory.text}
-                </motion.p>
-              </AnimatePresence>
+                  <div className="h-full w-full overflow-hidden rounded-[1.2rem] border border-white/35 bg-black/50 p-1 shadow-[0_0_28px_rgba(255,92,143,0.65)]">
+                    <img src={photo} alt="" className="h-full w-full rounded-[1rem] object-cover" />
+                  </div>
+                </motion.div>
+              )
+            }
 
-              <div className="mt-8 flex flex-wrap items-center gap-2">
+            return (
+              <motion.div
+                key={`note-${index}`}
+                className="absolute"
+                animate={{ y: [0, -8, 0] }}
+                transition={{
+                  duration: 5 + (index % 4),
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: 'easeInOut',
+                  delay: index * 0.18,
+                }}
+                style={{
+                  left: item.x,
+                  top: item.y,
+                  width: item.width,
+                  maxWidth: '78vw',
+                  transform: `translateZ(${item.z}px) rotate(${item.rotate}deg)`,
+                }}
+              >
+                <div className="rounded-full border border-[#ff8bb9]/45 bg-black/76 px-5 py-3 shadow-[0_0_18px_rgba(255,92,143,0.55),0_0_42px_rgba(255,92,143,0.22)] backdrop-blur-xl">
+                  <p className="truncate font-display text-lg text-[#f4a6c3]/90 md:text-xl">
+                    <span className="mr-2 text-[#ff70ac]">{'\u2665'}</span>
+                    {note}
+                  </p>
+                </div>
+              </motion.div>
+            )
+          })}
+        </motion.div>
+      </div>
+
+      <div className="pointer-events-none absolute left-5 top-6 md:left-8 md:top-8">
+        <p className="font-body text-[10px] uppercase tracking-[0.45em] text-white/26">{siteContent.eyebrow}</p>
+        <h1 className="mt-3 font-display text-3xl text-white/90 md:text-5xl">{siteContent.title}</h1>
+      </div>
+
+      <div className="pointer-events-none absolute left-1/2 top-[57%] z-20 w-[min(92vw,32rem)] -translate-x-1/2 md:hidden">
+        <div className="rounded-[1.6rem] border border-white/10 bg-black/55 p-5 text-center shadow-[0_30px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+          <p className="font-body text-[11px] uppercase tracking-[0.42em] text-white/35">
+            {activeStory.label} / {siteContent.story.length.toString().padStart(2, '0')}
+          </p>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={messageIndex}
+              initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -14, filter: 'blur(8px)' }}
+              transition={{ duration: 0.7, ease: 'easeOut' }}
+              className="mt-4 font-display text-[1.65rem] leading-tight text-white/92"
+            >
+              {activeStory.text}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="absolute bottom-4 left-1/2 z-30 w-[min(94vw,68rem)] -translate-x-1/2 md:bottom-6">
+        <div className="rounded-[1.7rem] border border-white/10 bg-black/48 px-4 py-4 shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:px-6">
+          <div className="hidden items-start justify-between gap-6 md:flex">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={messageIndex}
+                initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -14, filter: 'blur(8px)' }}
+                transition={{ duration: 0.7, ease: 'easeOut' }}
+                className="max-w-3xl font-display text-[1.9rem] leading-tight text-white/92"
+              >
+                {activeStory.text}
+              </motion.p>
+            </AnimatePresence>
+            <button
+              type="button"
+              onClick={onNext}
+              className="shrink-0 rounded-full border border-[#ff8bb9]/45 bg-black/80 px-5 py-3 font-body text-xs font-semibold uppercase tracking-[0.28em] text-[#f7b4cb] shadow-[0_0_18px_rgba(255,92,143,0.3)] transition hover:-translate-y-0.5"
+            >
+              Keep Going
+            </button>
+          </div>
+
+          <div className="mt-0 flex items-center justify-between gap-4 md:mt-5">
+            <div className="flex items-center gap-4">
+              <p className="hidden font-body text-[11px] uppercase tracking-[0.36em] text-white/30 md:block">
+                {siteContent.recipient}
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
                 {siteContent.story.map((entry, index) => (
                   <span
                     key={entry.label}
@@ -314,26 +334,21 @@ function FloatingMemoryRoom({ accent, activeStory, messageIndex, onNext }) {
                   />
                 ))}
               </div>
-
-              <div className="mt-8 flex items-center justify-between gap-4">
-                <p className="font-body text-[11px] uppercase tracking-[0.36em] text-white/30">
-                  {siteContent.recipient}
-                </p>
-                <button
-                  type="button"
-                  onClick={onNext}
-                  className="rounded-full border border-[#ff8bb9]/45 bg-black/80 px-5 py-3 font-body text-xs font-semibold uppercase tracking-[0.28em] text-[#f7b4cb] shadow-[0_0_18px_rgba(255,92,143,0.3)] transition hover:-translate-y-0.5"
-                >
-                  Keep Going
-                </button>
-              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <p className="hidden font-body text-[11px] uppercase tracking-[0.42em] text-white/24 md:block">
+                {siteContent.closingLine}
+              </p>
+              <button
+                type="button"
+                onClick={onNext}
+                className="rounded-full border border-white/15 bg-black/62 px-5 py-3 font-body text-xs font-semibold uppercase tracking-[0.3em] text-white/80 md:hidden"
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>
-
-        <p className="mt-6 text-center font-body text-[11px] uppercase tracking-[0.42em] text-white/24 md:mt-8">
-          {siteContent.closingLine}
-        </p>
       </div>
     </section>
   )
