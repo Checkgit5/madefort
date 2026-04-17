@@ -86,7 +86,7 @@ function GiftIntro({ accent, onReveal }) {
   )
 }
 
-function StoryCard({ accent, theme, currentIndex, onNext }) {
+function StoryCard({ accent, accentSoft, theme, currentIndex, onNext }) {
   const currentEntry = siteContent.story[currentIndex]
 
   return (
